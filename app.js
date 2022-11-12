@@ -9,12 +9,12 @@ require('dotenv/config')
 //initialising body parser for requests
 app.use(bParser.json())
 
-// //setting up routes
-// const wallRoute = require('./routes/wall')
-// const authRoute = require('./routes/auth')
+//setting up routes
+const wallRoute = require('./routes/wall')
+const authRoute = require('./routes/auth')
 
-// app.use('/api/wall', wallRoute)
-// app.use('/api/auth',authRoute)
+app.use('/api/wall', wallRoute)
+app.use('/api/auth',authRoute)
 
 //connecting to database
 mongoose.connect(process.env.DB_CONNECT, ()=> {
