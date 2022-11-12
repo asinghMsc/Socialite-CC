@@ -10,6 +10,7 @@ require('dotenv/config')
 app.use(bParser.json())
 
 // //setting up routes
+//
 // const wallRoute = require('./routes/wall')
 // const authRoute = require('./routes/auth')
 
