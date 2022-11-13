@@ -3,9 +3,8 @@ const router = express.Router()
 
 const SL_User = require('../models/sl-user')
 const SL_Post = require('../models/sl-posts')
-const SL_Comment = require('../models/sl-comments')
 
-const { registerValidation, loginValidation } = require('../validation')
+const { registerValidation, loginValidation } = require('../validations/validation')
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
