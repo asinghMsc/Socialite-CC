@@ -9,11 +9,11 @@ require('dotenv/config')
 //initialising body parser for requests
 app.use(bParser.json())
 
-//setting up routes
-const wallRoute = require('./routes/wall')
+// setting up routes - 
+const slpRoute = require('./routes/sl-posts')
 const authRoute = require('./routes/auth')
 
-app.use('/api/wall', wallRoute)
+app.use('/api/sl-posts', slpRoute)
 app.use('/api/auth', authRoute)
 
 //connecting to database
