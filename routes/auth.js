@@ -2,8 +2,8 @@
 const express = require('express')
 const router = express.Router()
 
-// const SL_User = require('../models/sl-user')
-// const SL_Post = require('../models/sl-posts')
+const slUser = require('../models/sl-user')
+// const slPost = require('../models/sl-posts')
 
 const { register_valid} = require('../validations/validation')
 
@@ -13,8 +13,20 @@ const { register_valid} = require('../validations/validation')
 //registering a user
 router.post('/register', async (req,res) => {
     // //validate the data before we make a user
-    // const { error } = registerValidation(req.body)
-    // if(error) return res.status(400).send(error.details[0].message)
+    const { error } = register_valid(req.body)
+    if(error) return res.status(400).send(error.details[0].message)
+
+    // //checking if the email is already in the database
+    const emailExist = await slUser.findOne({email: req.body.email})
+    if(emailExist){
+        return res.status(400).send({message:"Error: This email already exists, please try again."})
+    }
+
+    // checking if username exists
+    const usernameExist = await slUser.findOne({username: req.body.username})
+    if(usernameExist){
+        return res.status(400).send({message:"Error: This Username already exists, please try another one."})
+    }
 
     // //checking if the user is already in the database
     // const emailExists = await SL_User.findOne({email: req.body.email})
@@ -23,20 +35,21 @@ router.post('/register', async (req,res) => {
     // //hash passwords
     // const salt = await bcrypt.genSalt(10)
     // const hashedPassword = await bcrypt.hash(req.body.password, salt)
-        res.send(register_valid(req.body))
 
-    //creating a new user
-    // const user = new SL_User({
-    //     username: req.body.username,
-    //     email: req.body.email,
-    //     password: hashedPassword
-    // })
-    // try{
-    //     const savedUser = await user.save()
-    //     res.send({user: user._id})
-    // }catch(err){
-    //     res.status(400).send(err)
-    // }
+
+    // creating a new user
+    const user = new slUser({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        address: req.body.address
+    })
+    try{
+        const savedUser = await user.save()
+        // res.send({user: user._id})
+    }catch(err){
+        res.status(400).send({message:err})
+    }
 })
 
 // //login
