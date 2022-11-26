@@ -5,9 +5,9 @@ const router = express.Router()
 const slUser = require('../models/sl-user')
 // const slPost = require('../models/sl-posts')
 
-const { register_valid} = require('../validations/validation')
+const {register_valid, login_valid} = require('../validations/validation')
 
-// const bcrypt = require('bcryptjs')
+const bcryptjs = require('bcryptjs')
 // const jwt = require('jsonwebtoken')
 
 //registering a user
@@ -28,20 +28,17 @@ router.post('/register', async (req,res) => {
         return res.status(400).send({message:"Error: This Username already exists, please try another one."})
     }
 
-    // //checking if the user is already in the database
-    // const emailExists = await SL_User.findOne({email: req.body.email})
-    // if(emailExists) return res.status(400).send('Email already exists')
+    //hashing the password
+    const salt = await bcryptjs.genSalt(5)
+    const hashPassword = await bcryptjs.hash(req.body.password,salt)
 
-    // //hash passwords
-    // const salt = await bcrypt.genSalt(10)
-    // const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
 
     // creating a new user
     const user = new slUser({
         username: req.body.username,
         email: req.body.email,
-        password: req.body.password,
+        password: hashPassword,
         address: req.body.address
     })
     try{
@@ -52,11 +49,11 @@ router.post('/register', async (req,res) => {
     }
 })
 
-// //login
-// router.post('/login', async (req,res) => {
-//     //validate the data before we make a user
-//     const { error } = loginValidation(req.body)
-//     if(error) return res.status(400).send(error.details[0].message)
+//login
+router.post('/login', async (req,res) => {
+    //validate the data before we make a user
+    const { error } = login_valid(req.body)
+    if(error) return res.status(400).send(error.details[0].message)
 
 //     //checking if the email exists
 //     const user = await SL_User.findOne({email: req.body.email})
@@ -69,6 +66,6 @@ router.post('/register', async (req,res) => {
 //     //create and assign a token
 //     const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
 //     res.header('auth-token', token).send(token)
-// })
+})
 
 module.exports=router

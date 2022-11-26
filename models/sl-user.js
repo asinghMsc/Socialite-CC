@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 
 //creating a schema for the user
 const sl_User_Schema = mongoose.Schema({
+    
     username: {
         type: String,
         required: true,
@@ -22,10 +23,6 @@ const sl_User_Schema = mongoose.Schema({
         max:1024
     },
     date:{
-        type: Date,
-        default: Date.now
-    },
-    created:{
         type: Date,
         default: Date.now
     }
