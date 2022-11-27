@@ -6,15 +6,14 @@ const sl_User = require('../models/sl-user')
 const sl_Post = require('../models/sl-posts')
 const { post } = require('./auth')
 
+const verify = require('../verifyToken')
+
 // POST create data
-router.post('/',async(req,res) =>{
+router.post('/', verify, async(req,res) =>{
     const dataPost = new post({
         title: req.body.title,
         description: req.body.description,
-        user: req.body.user,
-        comments: req.body.comments,
-        likes: req.body.likes,
-        dislikes: req.body.dislikes
+        comments: req.body.comments
         
     })
     try{
@@ -26,7 +25,7 @@ router.post('/',async(req,res) =>{
 })
 
 // GET all data
-router.get('/', async(req,res) =>{
+router.get('/', verify, async(req,res) =>{
     try{
         const posts = await sl_Post.find()
         res.json(posts)

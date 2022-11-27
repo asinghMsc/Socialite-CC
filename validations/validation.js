@@ -7,6 +7,7 @@ register_valid = (data) => {
         username: joi.string().min(4).max(256).required(),
         email: joi.string().min(6).max(256).required().email(),
         password: joi.string().min(6).max(1024).required()
+
     })
     return schema_valid.validate(data)
 }
