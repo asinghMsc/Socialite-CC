@@ -1,6 +1,13 @@
 const mongoose = require('mongoose')
+const slUser = require('../models/sl-user')
 
 const PostSchema = mongoose.Schema({
+    // post_id 
+    post_id:{
+        type:String,
+        required:true
+    },
+
     user:{
         type:String,
         required:true
@@ -30,9 +37,15 @@ const PostSchema = mongoose.Schema({
         default:Date.now
     },
     comments:{
-        type:String,
+        type:Array,
+        required:true
+    },
+    likes:{
+        type:Array,
         required:true
     }
+
 })
+
 
 module.exports = mongoose.model('posts',PostSchema)

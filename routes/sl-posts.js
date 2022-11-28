@@ -4,18 +4,26 @@ const router = express.Router()
 const Post = require('../models/sl-posts')
 const verify = require('../verifyToken')
 
+//importing comments
+const Comment = require('../models/sl-comments')
+
+
+
 // POST (Create data)
 router.post('/', verify, async(req,res)=>{
     //console.log(req.body)
 
     const postData = new Post({
+        post_id: req.body.post_id,
         user:req.body.user,
         title:req.body.title,
         text:req.body.text,
         hashtag:req.body.hashtag,
         location:req.body.location,
         url:req.body.url,
-        comments:req.body.comments
+        time:req.body.time,
+        comments:req.body.comments,
+        likes:req.body.likes
     })
     // try to insert...
     try{
@@ -25,6 +33,8 @@ router.post('/', verify, async(req,res)=>{
         res.send({message:err})
     }
 })
+
+
 
 // Get 1 operation (Read all)
 router.get('/', verify, async(req,res) =>{
@@ -75,5 +85,8 @@ router.delete('/:postId',async(req,res)=>{
         res.send({message:err})
     }
 })
+
+
+
 
 module.exports = router

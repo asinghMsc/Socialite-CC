@@ -13,10 +13,12 @@ app.use(bParser.json())
 // setting up routes - 
 const slpRoute = require('./routes/sl-posts')
 const authRoute = require('./routes/auth')
+const slcRoute = require('./routes/sl-comments')
 
-//Api routes
+//Api routes8
 app.use('/api/sl-posts', slpRoute)
 app.use('/api/user', authRoute)
+app.use('/api/sl-comments', slcRoute)
 
 //connecting to database
 mongoose.connect(process.env.DB_CONNECT, ()=> {
