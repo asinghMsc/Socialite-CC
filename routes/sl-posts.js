@@ -6,6 +6,7 @@ const verify = require('../verifyToken')
 
 //importing comments
 const Comment = require('../models/sl-comments')
+const { populate } = require('../models/sl-posts')
 
 
 
@@ -14,7 +15,6 @@ router.post('/', verify, async(req,res)=>{
     //console.log(req.body)
 
     const postData = new Post({
-        post_id: req.body.post_id,
         user:req.body.user,
         title:req.body.title,
         text:req.body.text,
@@ -33,6 +33,75 @@ router.post('/', verify, async(req,res)=>{
         res.send({message:err})
     }
 })
+
+// post like
+router.patch('/like/:postId', verify, async(req,res) =>{
+    try{
+        const updatePostById = await Post.updateOne(
+            {_id:req.params.postId},
+            {$set:{
+                likes:req.body.likes,
+                time:req.body.time
+                }
+            })
+        res.send(updatePostById)
+    }catch(err){
+        res.send({message:err})
+    }
+})
+
+// remove like
+router.patch('/unlike/:postId', verify, async(req,res) =>{
+    try{
+        const updatePostById = await Post.updateOne(
+            {_id:req.params.postId},
+            {$set:{
+                likes:req.body.likes,
+                time:req.body.time
+                }
+            })
+        res.send(updatePostById)
+    }catch(err){
+        res.send({message:err})
+    }
+})
+
+
+// post comment
+router.patch('/comment/:postId', verify, async(req,res) =>{
+    try{
+        const updatePostById = await Post.updateOne(
+            {_id:req.params.postId},
+            {$push:{
+                comments:req.body.comments,
+                time:req.body.time
+                }
+            })
+        res.send(updatePostById)
+    }catch(err){
+        res.send({message:err})
+    }
+})
+
+// delete comment
+router.patch('/deletecomment/:postId', verify, async(req,res) =>{
+    try{
+        const updatePostById = await Post.updateOne(
+            {_id:req.params.postId},
+            {$pull:{
+                comments:req.body.comments,
+                time:req.body.time
+                }
+            })
+        res.send(updatePostById)
+    }catch(err){
+        res.send({message:err})
+    }
+})
+
+
+
+
 
 
 
@@ -67,7 +136,10 @@ router.patch('/:postId', async(req,res) =>{
                 text:req.body.text,
                 hashtag:req.body.hashtag,
                 location:req.body.location,
-                url:req.body.url
+                url:req.body.url,
+                time:req.body.time,
+                comments:req.body.comments,
+                likes:req.body.likes
                 }
             })
         res.send(updatePostById)
@@ -75,6 +147,9 @@ router.patch('/:postId', async(req,res) =>{
         res.send({message:err})
     }
 })
+
+// Add comments
+
 
 // Delete operation
 router.delete('/:postId',async(req,res)=>{

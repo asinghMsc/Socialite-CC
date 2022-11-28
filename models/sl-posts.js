@@ -2,12 +2,7 @@ const mongoose = require('mongoose')
 const slUser = require('../models/sl-user')
 
 const PostSchema = mongoose.Schema({
-    // post_id 
-    post_id:{
-        type:String,
-        required:true
-    },
-
+   
     user:{
         type:String,
         required:true

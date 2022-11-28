@@ -6,6 +6,7 @@ const CommentSchema = mongoose.Schema({
         type:String,
         required:true
     },
+
     text:{
         type:String
     },
@@ -13,6 +14,7 @@ const CommentSchema = mongoose.Schema({
         type:Date,
         default:Date.now
     },
+
 })
 
 // implementing comments
