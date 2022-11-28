@@ -1,75 +1,78 @@
-// importing express and router
-const express = require('express')
+const express =require('express')
 const router = express.Router()
 
-const sl_User = require('../models/sl-user')
-const sl_Post = require('../models/sl-posts')
-const { post } = require('./auth')
-
+const Post = require('../models/sl-posts')
 const verify = require('../verifyToken')
 
-// POST create data
-router.post('/', verify, async(req,res) =>{
-    const dataPost = new post({
-        title: req.body.title,
-        description: req.body.description,
-        comments: req.body.comments
-        
+// POST (Create data)
+router.post('/', verify, async(req,res)=>{
+    //console.log(req.body)
+
+    const postData = new Post({
+        user:req.body.user,
+        title:req.body.title,
+        text:req.body.text,
+        hashtag:req.body.hashtag,
+        location:req.body.location,
+        url:req.body.url
     })
+    // try to insert...
     try{
-        const savedPost = await dataPost.save()
-        res.json(savedPost)
+        const postToSave = await postData.save()
+        res.send(postToSave)
     }catch(err){
-        res.json({message: err})
+        res.send({message:err})
     }
 })
 
-// GET all data
+// Get 1 operation (Read all)
 router.get('/', verify, async(req,res) =>{
     try{
-        const posts = await sl_Post.find()
-        res.json(posts)
+        const getPosts = await Post.find().limit(10)
+        res.send(getPosts)
     }catch(err){
-        res.json({message: err})
+        res.send({message:err})
     }
-}
-)
+})
 
-// GET specific data
+// Get 2 operation (Read by ID)
 router.get('/:postId', async(req,res) =>{
     try{
-        const post = await sl_Post.findById(req.params.postId)
-        res.json(post)
+        const getPostById = await Post.findById(req.params.postId)
+        res.send(getPostById)
     }catch(err){
-        res.json({message: err})
+        res.send({message:err})
     }
-}
-)
+})
 
-// DELETE specific data
-router.delete('/:postId', async(req,res) =>{
-    try{
-        const removedPost = await sl_Post.remove({_id: req.params.postId})
-        res.json(removedPost)
-    }catch(err){
-        res.json({message: err})
-    }
-}
-)
-
-// UPDATE specific data
+// Patch operation
 router.patch('/:postId', async(req,res) =>{
     try{
-        const updatedPost = await sl_Post.updateOne(
-            {_id: req.params.postId}, 
-            {$set: {title: req.body.title}}
-            )
-        res.json(updatedPost)
+        const updatePostById = await Post.updateOne(
+            {_id:req.params.postId},
+            {$set:{
+                user:req.body.user,
+                title:req.body.title,
+                text:req.body.text,
+                hashtag:req.body.hashtag,
+                location:req.body.location,
+                url:req.body.url
+                }
+            })
+        res.send(updatePostById)
     }catch(err){
-        res.json({message: err})
+        res.send({message:err})
     }
-}
-)
+})
+
+// Delete operation
+router.delete('/:postId',async(req,res)=>{
+    try{
+        const deletePostById = await Post.deleteOne({_id:req.params.postId})
+        res.send(deletePostById)
+    }catch(err){
+        res.send({message:err})
+    }
+})
 
 module.exports = router
-

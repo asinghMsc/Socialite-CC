@@ -14,6 +14,7 @@ app.use(bParser.json())
 const slpRoute = require('./routes/sl-posts')
 const authRoute = require('./routes/auth')
 
+//Api routes
 app.use('/api/sl-posts', slpRoute)
 app.use('/api/user', authRoute)
 
@@ -21,9 +22,6 @@ app.use('/api/user', authRoute)
 mongoose.connect(process.env.DB_CONNECT, ()=> {
     console.log('Database is now connected')
 })
-
-
-
 
 
 

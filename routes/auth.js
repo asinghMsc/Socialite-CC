@@ -1,7 +1,6 @@
 //importing express and router
 const express = require('express')
 const router = express.Router()
-router.use(express.json())
 
 const slUser = require('../models/sl-user')
 // const slPost = require('../models/sl-posts')
