@@ -14,7 +14,8 @@ router.post('/', verify, async(req,res)=>{
         text:req.body.text,
         hashtag:req.body.hashtag,
         location:req.body.location,
-        url:req.body.url
+        url:req.body.url,
+        comments:req.body.comments
     })
     // try to insert...
     try{
