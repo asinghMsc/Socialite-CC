@@ -6,7 +6,6 @@ const Post = require('../models/sl-posts')
 const verify = require('../verifyToken')
 
 //importing comments
-const Comment = require('../models/sl-comments')
 const { populate } = require('../models/sl-posts')
 
 // const d = new Date(Date.now())
@@ -23,10 +22,8 @@ router.post('/', verify, async(req,res)=>{
         hashtag:req.body.hashtag,
         location:req.body.location,
         url:req.body.url,
-        postTime:req.body.postTime,
         comments:req.body.comments,
-        likes:req.body.likes,
-        createdAt:req.body.createdAt
+        likes:req.body.likes
     })
     // try to insert...
     try{
@@ -137,8 +134,8 @@ router.get('/', verify, async(req,res) =>{
     }
 })
 
-// Get 2 operation (Read by ID)
-router.get('/:postId', async(req,res) =>{
+// Get 2 operation (Read by ID) passed verify for Oauth
+router.get('/:postId', verify, async(req,res) =>{
     try{
         const getPostById = await Post.findById(req.params.postId)
         res.send(getPostById)
