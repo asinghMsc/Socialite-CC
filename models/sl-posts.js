@@ -1,7 +1,11 @@
+const { date } = require('joi')
 const mongoose = require('mongoose')
 const slUser = require('../models/sl-user')
+const createdAt = Date.now() 
+
 
 const PostSchema = mongoose.Schema({
+    
    
     user:{
         type:String,
@@ -27,17 +31,28 @@ const PostSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    time:{
+    postTime:{
         type:Date,
         default:Date.now
     },
     comments:{
         type:Array,
-        required:true
+        required:true,
+        createdAt
     },
     likes:{
         type:Array,
+        required:true,
+        createdAt
+    },
+    dislikes:{
+        type:Array,
         required:true
+    },
+    // timestamps
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 
 })
