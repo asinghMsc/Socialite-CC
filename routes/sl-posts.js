@@ -1,5 +1,6 @@
 const express =require('express')
 const router = express.Router()
+const moment = require('moment')
 
 const Post = require('../models/sl-posts')
 const verify = require('../verifyToken')
@@ -8,7 +9,8 @@ const verify = require('../verifyToken')
 const Comment = require('../models/sl-comments')
 const { populate } = require('../models/sl-posts')
 
-
+// const d = new Date(Date.now())
+// d.toDateString()
 
 // POST (Create data)
 router.post('/', verify, async(req,res)=>{
@@ -95,8 +97,8 @@ router.patch('/comment/:postId', verify, async(req,res) =>{
         const updatePostById = await Post.updateOne(
             {_id:req.params.postId},
             {$push:{
-                comments:{ $each:[req.body.comments,], $position: 0 },
-                createdAt:req.body.createdAt,
+                comments:{ $each:[req.body.comments, req.user._id, moment().format('MMMM Do YYYY, h:mm:ss a')], $position: 0 },
+              
                 user:req.body.user
             }
                 }
