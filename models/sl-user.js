@@ -1,3 +1,4 @@
+// importing joi and mongoose and storing them in variables
 const Joi = require('joi')
 const mongoose = require('mongoose')
 

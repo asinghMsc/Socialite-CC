@@ -1,44 +1,46 @@
+// importing express and router and moment.js
 const express =require('express')
 const router = express.Router()
 const moment = require('moment')
-
+const slPosts = require('../models/sl-posts')
 const Post = require('../models/sl-posts')
 const verify = require('../verifyToken')
+const timestamp = moment().format('MMMM Do YYYY, h:mm:ss a')
 
-//importing comments
-const { populate } = require('../models/sl-posts')
-
-// const d = new Date(Date.now())
-// d.toDateString()
-
-// POST (Create data)
+// Creating a new post
 router.post('/', verify, async(req,res)=>{
-    //console.log(req.body)
+    
 
     const postData = new Post({
-        user:req.body.user,
+        user:req.user,
+        postTime:timestamp,
         title:req.body.title,
         text:req.body.text,
         hashtag:req.body.hashtag,
         location:req.body.location,
         url:req.body.url,
+        postId : req.postId,
         comments:req.body.comments,
-        likes:req.body.likes
+        likes:req.body.likes,
     })
-    // try to insert...
+    
     try{
         const postToSave = await postData.save()
         res.send(postToSave)
     }catch(err){
         res.send({message:err})
     }
+
+
 })
 
 
 
-// post like
+// Liking a post
 router.patch('/like/:postId', verify, async(req,res) =>{
+  
     try{
+     
         const updatePostById = await Post.updateOne(
             {_id:req.params.postId},
             {$push:{
@@ -48,14 +50,30 @@ router.patch('/like/:postId', verify, async(req,res) =>{
                 createdAt:req.body.createdAt
 
                 }
-            })
+                
+            }) 
+
+            // // only other users can like a post
+            // const post = await Post.findOne({_id:req.params.postId})
+            // if(post.user === req.user._id){
+            //     return res.status(400).send({message:"You cannot like your own post"})
+            // }
+
+            // only other users can like a post
+            // const post = await Post.findOne({_id:req.params.postId})
+            // if(post.user === req.user._id){
+            //     return res.status(400).send({message:"You cannot like your own post"})
+            // }
+ 
+        
         res.send(updatePostById)
     }catch(err){
         res.send({message:err})
     }
+
 })
 
-// post dislike
+// Disliking a post
 router.patch('/dislike/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
@@ -71,7 +89,7 @@ router.patch('/dislike/:postId', verify, async(req,res) =>{
     }
 })
 
-// remove like
+// Unliking a post
 router.patch('/unlike/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
@@ -88,7 +106,8 @@ router.patch('/unlike/:postId', verify, async(req,res) =>{
 })
 
 
-// post comment comments array reference : https://www.mongodb.com/docs/v6.0/reference/operator/update/each/#mongodb-update-up.-each
+// Commenting on a post, Array reference : https://www.mongodb.com/docs/v6.0/reference/operator/update/each/#mongodb-update-up.-each
+// Moment JS reference : https://momentjs.com/docs/#/displaying/
 router.patch('/comment/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
@@ -106,7 +125,7 @@ router.patch('/comment/:postId', verify, async(req,res) =>{
     }
 })
 
-// delete comment
+// Deleting a post
 router.patch('/deletecomment/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
@@ -123,18 +142,21 @@ router.patch('/deletecomment/:postId', verify, async(req,res) =>{
 })
 
 
-// Get 1 operation (Read all)
+// Get All Posts
 router.get('/', verify, async(req,res) =>{
-    try{
+
     
-        const getPosts = await Post.find().limit(10)
-        res.send(getPosts)
+       try { const getPosts = await Post.find().limit(10)
+            const posts = getPosts.sort((a,b) => b.likes.length - a.likes.length)
+           
+            res.send(getPosts)
     } catch(err){
         res.send({message:err})
     }
+
 })
 
-// Get 2 operation (Read by ID) passed verify for Oauth
+// Get a post by ID
 router.get('/:postId', verify, async(req,res) =>{
     try{
         const getPostById = await Post.findById(req.params.postId)
@@ -144,8 +166,8 @@ router.get('/:postId', verify, async(req,res) =>{
     }
 })
 
-// Patch operation
-router.patch('/:postId', async(req,res) =>{
+// Patch a post by ID
+router.patch('/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
             {_id:req.params.postId},
@@ -167,11 +189,9 @@ router.patch('/:postId', async(req,res) =>{
     }
 })
 
-// Add comments
 
-
-// Delete operation
-router.delete('/:postId',async(req,res)=>{
+// Delete a post by ID
+router.delete('/:postId', verify, async(req,res)=>{
     try{
         const deletePostById = await Post.deleteOne({_id:req.params.postId})
         res.send(deletePostById)

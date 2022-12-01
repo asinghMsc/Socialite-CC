@@ -1,6 +1,7 @@
-
+// saving mongoose to a variable
 const mongoose = require('mongoose')
-const slUser = require('../models/sl-user')
+
+// assiging date.now to a variable
 const createdAt = Date.now() 
 
 
@@ -8,6 +9,10 @@ const PostSchema = mongoose.Schema({
     
    
     user:{
+        type:String,
+        required:true
+    },
+    postTime:{
         type:String,
         required:true
     },
@@ -49,4 +54,4 @@ const PostSchema = mongoose.Schema({
 })
 
 
-module.exports = mongoose.model('posts',PostSchema)
+module.exports = mongoose.model('sl-posts',PostSchema)

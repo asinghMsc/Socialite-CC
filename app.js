@@ -14,7 +14,7 @@ app.use(bParser.json())
 const slpRoute = require('./routes/sl-posts')
 const authRoute = require('./routes/auth')
 
-//Api routes8
+//Api routes
 app.use('/api/sl-posts', slpRoute)
 app.use('/api/user', authRoute)
 

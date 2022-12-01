@@ -2,7 +2,7 @@
 const joi = require('joi')
 
 //register validation
-register_valid = (data) => {
+const register_valid = (data) => {
     const schema_valid = joi.object({
         username: joi.string().min(4).max(256).required(),
         email: joi.string().min(6).max(256).required().email(),
@@ -28,7 +28,18 @@ const login_valid = (data) => {
 const post_valid = (data) => {
     const schema_valid = joi.object({
         title: joi.string().min(4).max(255).required(),
-        description: joi.string().min(6).max(1024).required()
+        description: joi.string().min(6).max(1024).required(),
+        comments: joi.string().min(6).max(1024).required()
+
+    })
+    return schema_valid.validate(data)
+}
+
+// patch validation
+const patch_valid = (data) => {
+    const schema_valid = joi.object({
+        title: joi.string().min(4).max(255),
+        description: joi.string().min(6).max(1024)
 
     })
     return schema_valid.validate(data)
@@ -37,3 +48,4 @@ const post_valid = (data) => {
 module.exports.register_valid = register_valid
 module.exports.login_valid = login_valid
 module.exports.post_valid = post_valid
+module.exports.patch_valid = patch_valid

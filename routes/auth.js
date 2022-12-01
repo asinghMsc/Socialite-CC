@@ -47,7 +47,7 @@ router.post('/register', async (req,res) => {
     })
     try{
         const savedUser = await user.save()
-        // res.send({user: user._id})
+        res.status(200).send({message:"User has been registered successfully", user: user._id})
     }catch(err){
         res.status(400).send({message:err})
     }
@@ -78,17 +78,7 @@ router.post('/login', async (req,res) => {
     const token = jwt.sign({_id:user._id}, process.env.TOKEN_SECRET)
     res.header('authToken',token).send({'authentication token':token})
 
-//     //checking if the email exists
-//     const user = await SL_User.findOne({email: req.body.email})
-//     if(!user) return res.status(400).send('Email is not found')
 
-//     //password is correct
-//     const validPass = await bcrypt.compare(req.body.password, user.password)
-//     if(!validPass) return res.status(400).send('Invalid password')
-
-//     //create and assign a token
-//     const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
-//     res.header('auth-token', token).send(token)
 })
 
 
