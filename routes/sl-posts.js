@@ -34,60 +34,54 @@ router.post('/', verify, async(req,res)=>{
 
 })
 
-
-
 // Liking a post
+// User check using findOne to prevent users liking on own post & prevents multiple likes from one user: https://mongoosejs.com/docs/queries.html
 router.patch('/like/:postId', verify, async(req,res) =>{
   
     try{
-     
-        const updatePostById = await Post.updateOne(
-            {_id:req.params.postId},
-            {$push:{
-                likes:req.user._id,
-                postTime:req.body.postTime,
-                $position:0,
-                createdAt:req.body.createdAt
+        // Check if the user is trying to like their own post
+        const post = await Post.findOne({
+            _id: req.params.postId,
+            user: req.user._id
+        });
 
-                }
-                
-            }) 
+        if (post) {
+            // If the user is trying to like their own post, return an error
+            res.send({message: 'Cannot like your own post'});
+        } else {
+            // Check if the user's ID already exists in the likes array
+            const post = await Post.findOne({
+                _id: req.params.postId,
+                likes: req.user._id
+            });
 
-            // // only other users can like a post
-            // const post = await Post.findOne({_id:req.params.postId})
-            // if(post.user === req.user._id){
-            //     return res.status(400).send({message:"You cannot like your own post"})
-            // }
+            if (post) {
+                // If the user's ID exists in the likes array, return an error
+                res.send({message: 'Post already liked'});
+            } else {
+                // Use $addToSet to add the user's ID to the likes array
+                // if it doesn't already exist
+                const updatePostById = await Post.updateOne(
+                    {_id:req.params.postId},
+                    {$addToSet:{
+                        likes:req.user._id
+                    },
+                    // Set the postTime and createdAt fields on the post document
+                    $set:{
+                        postTime:req.body.postTime,
+                        createdAt:req.body.createdAt
+                    }
+                });
 
-            // only other users can like a post
-            // const post = await Post.findOne({_id:req.params.postId})
-            // if(post.user === req.user._id){
-            //     return res.status(400).send({message:"You cannot like your own post"})
-            // }
- 
-        
-        res.send(updatePostById)
+                res.send(updatePostById)
+            }
+        }
     }catch(err){
         res.send({message:err})
     }
 
 })
 
-// Disliking a post
-router.patch('/dislike/:postId', verify, async(req,res) =>{
-    try{
-        const updatePostById = await Post.updateOne(
-            {_id:req.params.postId},
-            {$set:{
-                dislikes:req.body.dislikes,
-                postTime:req.body.postTime
-                }
-            })
-        res.send(updatePostById)
-    }catch(err){
-        res.send({message:err})
-    }
-})
 
 // Unliking a post
 router.patch('/unlike/:postId', verify, async(req,res) =>{
@@ -107,25 +101,49 @@ router.patch('/unlike/:postId', verify, async(req,res) =>{
 
 
 // Commenting on a post, Array reference : https://www.mongodb.com/docs/v6.0/reference/operator/update/each/#mongodb-update-up.-each
-// Moment JS reference : https://momentjs.com/docs/#/displaying/
+// User check using findOne to prevent users commenting on own post: https://mongoosejs.com/docs/queries.html
 router.patch('/comment/:postId', verify, async(req,res) =>{
     try{
-        const updatePostById = await Post.updateOne(
-            {_id:req.params.postId},
-            {$push:{
-                comments:{ $each:[req.body.comments, req.user._id, moment().format('MMMM Do YYYY, h:mm:ss a')], $position: 0 },
-              
-                user:req.body.user
-            }
+        // Check if the user is trying to comment on their own post
+        const post = await Post.findOne({
+            _id: req.params.postId,
+            user: req.user._id
+        });
+
+        if (post) {
+            // If the user is trying to comment on their own post, return an error
+            res.send({message: 'Cannot comment on your own post'});
+        } else {
+            // Use $push to add the comment to the comments array
+            const updatePostById = await Post.updateOne(
+                {_id:req.params.postId},
+                {$push:{
+                    comments:{
+                        $each:[
+                            {
+                                user:req.user._id,
+                                text:req.body.comments,
+                                commentTime:timestamp
+                            }
+                        ],
+                        $position: 0
+                    }
+                },
+                // Set the user field on the post document
+                $set:{
+                    user:req.body.user
                 }
-            )
-        res.send(updatePostById)
+            });
+
+            res.send(updatePostById)
+        }
     }catch(err){
         res.send({message:err})
     }
 })
 
-// Deleting a post
+
+// Deleting a comment
 router.patch('/deletecomment/:postId', verify, async(req,res) =>{
     try{
         const updatePostById = await Post.updateOne(
@@ -201,6 +219,52 @@ router.delete('/:postId', verify, async(req,res)=>{
 })
 
 
+
+
+
+
+
+
+// // Import the required modules
+// const express = require("express");
+// const mongoose = require("mongoose");
+
+// // Connect to the MongoDB database
+// mongoose.connect("mongodb://localhost:27017/myapp", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
+
+// // Create the Express app
+// const app = express();
+
+// // Define the route for liking a post
+// app.post("/posts/:id/like", (req, res) => {
+//   // Get the user's ID from the session or authentication token
+//   const userId = req.session.userId || req.authToken.userId;
+
+//   // Get the ID of the post being liked
+//   const postId = req.params.id;
+
+//   // Find the post in the database
+//   Post.findById(postId, (err, post) => {
+//     if (err) {
+//       // Handle the error
+//       ...
+//     } else {
+//       // Check if the user is trying to like their own post
+//       if (userId === post.userId) {
+//         // Return an error message
+//         res.status(400).send({
+//           error: "You cannot like your own post."
+//         });
+//       } else {
+//         // Like the post
+//         ...
+//       }
+//     }
+//   });
+// });
 
 
 module.exports = router

@@ -15,7 +15,7 @@ const slpRoute = require('./routes/sl-posts')
 const authRoute = require('./routes/auth')
 
 //Api routes
-app.use('/api/sl-posts', slpRoute)
+app.use('/api/sl-post', slpRoute)
 app.use('/api/user', authRoute)
 
 //connecting to database
