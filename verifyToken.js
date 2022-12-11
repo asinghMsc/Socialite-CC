@@ -1,10 +1,11 @@
+//Verifying the token and allow access to the protected routes
 const { send } = require('express/lib/response')
 const jwt = require('jsonwebtoken')
 
 function auth(req,res,next){
     const token = req.header('authToken')
     if(!token){
-         return res.status(401).send({message:'Access denied. No token provided test 1 '})
+         return res.status(401).send({message:'Access denied. No token provided. '})
 
     }
     try{
@@ -13,7 +14,7 @@ function auth(req,res,next){
         next()
 
     }catch(err){{
-        return res.status(401).send({message:'Access denied. No token provided'})
+        return res.status(401).send({message:'Access denied. No token provided.'})
 
     }}
 }

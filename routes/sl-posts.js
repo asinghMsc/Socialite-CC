@@ -46,7 +46,7 @@ router.patch('/like/:postId', verify, async(req,res) =>{
         });
 
         if (post) {
-            // If the user is trying to like their own post, return an error
+            // If the user is trying to like their own post return an error
             res.send({message: 'Cannot like your own post'});
         } else {
             // Check if the user's ID already exists in the likes array
@@ -56,7 +56,7 @@ router.patch('/like/:postId', verify, async(req,res) =>{
             });
 
             if (post) {
-                // If the user's ID exists in the likes array, return an error
+                // If the user's ID exists in the likes array return error
                 res.send({message: 'Post already liked'});
             } else {
                 // Use $addToSet to add the user's ID to the likes array
@@ -64,7 +64,7 @@ router.patch('/like/:postId', verify, async(req,res) =>{
                 const updatePostById = await Post.updateOne(
                     {_id:req.params.postId},
                     {$addToSet:{
-                        likes:req.user._id
+                        likes:req.user._id,
                     },
                     // Set the postTime and createdAt fields on the post document
                     $set:{
@@ -163,13 +163,14 @@ router.patch('/deletecomment/:postId', verify, async(req,res) =>{
 // Get All Posts
 router.get('/', verify, async(req,res) =>{
 
-    
-       try { const getPosts = await Post.find().limit(10)
-            const posts = getPosts.sort((a,b) => b.likes.length - a.likes.length)
-           
-            res.send(getPosts)
+    try {
+        const posts = await Post.find().sort({
+            likes: -1,
+            postTime: -1
+        })
+        res.send(posts)
     } catch(err){
-        res.send({message:err})
+        res.send({message: err})
     }
 
 })

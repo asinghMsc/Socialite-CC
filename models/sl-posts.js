@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 // assiging date.now to a variable
 const createdAt = Date.now() 
 
-
+// creating a schema for the posts
 const PostSchema = mongoose.Schema({
     
    
@@ -45,13 +45,9 @@ const PostSchema = mongoose.Schema({
         type:Array,
         required:true,
         createdAt
-    },
-    dislikes:{
-        type:Array,
-        required:true
     }
 
 })
 
-
+// exporting the model
 module.exports = mongoose.model('sl-posts',PostSchema)
